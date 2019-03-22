@@ -1,0 +1,14 @@
+{% extends "detailpage_base.html" %}
+{% block style %} {{ super() }} {% endblock %}
+{% block contents %}
+
+<table>
+  {% for dh_key in dos_header_keys %}
+  <tr>
+    <td id="gray"> {{ dh_key }} </td>
+    <td> {{ r0104_dict['metadata']['application']['pe']['dos_header'][dh_key] }} </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
