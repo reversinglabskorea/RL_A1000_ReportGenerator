@@ -17,12 +17,13 @@ py reportGenerator.py --auth authfile -u/--upload samplefilelist
   - space로 구분
 ```
 addr ****
-username ****
-password ****
+token ****
 ```
 
   **samplefilelist example**
-  - file 경로 작성, enterkey로 구분, hash값(SHA1) 입력시 맨 앞에 ~ 붙임(업로드 하지않고 hash값을 통한 정보 검색만 진행)
+  - file 경로 작성
+  - enterkey로 구분
+  - hash값(SHA1) 입력시 맨 앞에 ~ 붙임(업로드 하지않고 hash값을 통한 정보 검색만 진행)
 ```
 C:\test\testfile.zip
 D:\reversinglabs\test2.text

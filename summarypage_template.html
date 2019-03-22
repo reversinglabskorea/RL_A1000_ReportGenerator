@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title> ReversingLabs TiCloud Report </title>
+  <title> ReversingLabs A1000 Report </title>
   <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR" rel="stylesheet">
   <!--
     <link rel="stylesheet" type="text/css" href="main.css">
@@ -154,8 +154,8 @@
         <img src='../resources/logo.png' width="200px">
       </div>
       <div class="cate-list">
-        <p> {{ time_list[0] }} UTC </p>
-        <p> {{ time_list[1] }} LOCAL </p>
+        <h1> A1000 REPORT </h1>
+        <p> {{ time_list[0] }} UTC <br> {{ time_list[1] }} LOCAL </p>
         <p> {{ data_categorized_number['UNKNOWN']+data_categorized_number['KNOWN']+data_categorized_number['SUSPICIOUS']+data_categorized_number['MALICIOUS'] }} Files </p>
         <p> <div class="UNKNOWN-circle"></div> {{ data_categorized_number['UNKNOWN'] }} Unknown </p>
         <p> <div class="KNOWN-circle"></div> {{ data_categorized_number['KNOWN'] }} Known </p>

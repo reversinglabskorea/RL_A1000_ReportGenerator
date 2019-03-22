@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title> ReversingLabs TiCloud Report </title>
+  <title> ReversingLabs A1000 Report </title>
   <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR" rel="stylesheet">
   <!--
     <link rel="stylesheet" type="text/css" href="main.css">
@@ -93,7 +93,6 @@
     }
 
     .av-detection {
-      width: {{ "%d"|format(rl_malwarepresence['scanner_percent']) }}%;
       background-color: #D00000;
     }
 
@@ -196,37 +195,10 @@
       <div id="generate-date"> Report Generated Date: {{ time_list[0] }} UTC </div>
       <h1> {{ file_name }} </h1>
       <div class="file-description">
-        <ul>
-          <li> Size: {{ filesize_formatted }} </li>
-          <li> Type: {{ r0104_dict['info']['file']['file_type'] }} {% if r0104_dict['info']['file']['file_subtype'] and r0104_dict['info']['file']['file_subtype']!="None" %} / {{ r0104_dict['info']['file']['file_subtype'] }} {% endif %}  </li>
-          <li> First seen: {{ rl_malwarepresence['first_seen'] }} UTC </li>
-          <li> Last seen: {{ rl_malwarepresence['last_seen'] }} UTC </li>
-        </ul>
-
-      </div>
-      <h3>
-        <div class="{{ rl_malwarepresence['status'] }}-circle"></div> {{ rl_malwarepresence['status'] }}
-      </h3>
-      <table id="hash-value">
-        {% set hash_var = ['md5', 'sha1', 'sha256', 'sha384', 'sha512', 'ripemd160', 'ssdeep', 'imphash'] %}
-        {% for hv in hash_var %}
-        {% if rl_sample[hv] %}
-        <tr>
-          <td id="gray"> {{ hv }} </td>
-          <td> {{ rl_sample[hv] }} </td>
-        </tr>
-        {% endif %}
-        {% endfor %}
-      </table>
       <div id="description">
-        {{ r0104_dict['story'] }}
+        {{ root["story"] }}
         </div>
-
-      <h3> {{ rl_malwarepresence['scanner_match']}} of {{ rl_malwarepresence['scanner_count'] }} AV Detection </h3>
-      <div class="container">
-        <div class="skills av-detection"> {{ "%d"|format(rl_malwarepresence['scanner_percent']) }}%</div>
       </div>
-
     </div>
   </section>
 </body>
