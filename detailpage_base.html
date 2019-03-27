@@ -26,6 +26,7 @@
       float: left;
       background-color: white;
       border-right: 1px solid #eee;
+      padding: 10px;
     }
 
     #right-column {
@@ -57,14 +58,17 @@
       float: right;
     }
 
-    table,
     tr,
     td {
       padding: 2px;
     }
 
+    td {
+      border-bottom: 1px dotted lightgray;
+    }
 
     table {
+      padding: 0px;
       border-style: solid hidden solid hidden;
       border-top: 1px solid gray;
       border-bottom: 1px solid gray;
@@ -111,7 +115,7 @@
       padding-left: 12px;
     }
 
-    .MALICIOUS-circle {
+    .malicious-circle {
       background-color: #D00000;
       width: 0.7rem;
       height: 0.7rem;
@@ -120,7 +124,7 @@
       margin-right: 0.5rem;
     }
 
-    .KNOWN-circle {
+    .known-circle {
       background-color: #94B60A;
       width: 0.7rem;
       height: 0.7rem;
@@ -129,7 +133,7 @@
       margin-right: 0.5rem;
     }
 
-    .UNKNOWN-circle {
+    .unknown-circle {
       background-color: #3D3D3D;
       width: 0.7rem;
       height: 0.7rem;
@@ -138,7 +142,7 @@
       margin-right: 0.5rem;
     }
 
-    .SUSPICIOUS-circle {
+    .suspicious-circle {
       background-color: #F8A80D;
       width: 0.7rem;
       height: 0.7rem;
@@ -165,6 +169,13 @@
     a:hover {
       text-decoration: none;
       color: #000000;
+      text-decoration-line: underline;
+    }
+
+    #menutab-title {
+      text-align: center;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
     }
 
     {% endblock style %}
@@ -177,6 +188,7 @@
       <div id="left-up">
         <a href="./summarypage.html"> <img src='../resources/logo.png' width="200px"> </a>
       </div>
+      <p id="menutab-title"> ReversingLabs A1000 Report </p>
       <ul>
         <li id="category-list"> <a href="{{ savefile_name }}.html"> <b> Summary </b> </a> </li>
         <li id="category-list"> <b> Application (PE) </b> </li>
@@ -191,7 +203,6 @@
   <section id="right-section">
     <div id="right-column">
       <div id="generate-date"> Report Generated Date: {{ time_list[0] }} UTC </div>
-      <h1> {{ file_name }} </h1>
         {% block contents %}
         {% endblock %}
     </div>

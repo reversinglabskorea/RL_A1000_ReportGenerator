@@ -95,35 +95,48 @@ if __name__ == "__main__":
 
             print("hash_code:", hash_code)
 
-            rootdata = requests.get(addr+'/api/samples/'+hash_code+'/ticore/',
-                            headers ={'Authorization': 'Token %s' % token})
+            ticoredata = requests.get(addr+'/api/samples/'+hash_code+'/ticore/',
+                            headers = {'Authorization': 'Token %s' % token})
 
-            root = json.loads(rootdata.text)
+            ticore = json.loads(ticoredata.text)
+
+            post_data = {"hash_values": hash_code, "fields": ["id", "sha1", "sha256", "sha512", "md5", "category", "file_type", "file_subtype", "identification_name",\
+                   "identification_version", "file_size", "extracted_file_count", "local_first_seen", "local_last_seen",\
+                   "classification_origin", "classification_reason",\
+                   "threat_status", "trust_factor", "threat_level", "threat_name",\
+                   "summary", "ticloud", "aliases"]}
+
+            listdata = requests.post(addr+'/api/samples/list/',
+                            data=post_data,
+                            headers = {'Authorization': 'Token %s' % token})
+
+            result = json.loads(listdata.text)
+            result = result['results'][0]
 
             savefile_name = str(index)+'_'+file_name
 
+            data[hash_code] = [f, result['threat_status'], savefile_name]
+
             ##
-            tf = open("template.html", "r", encoding='utf-8')
-            tmpl2 = Template(tf.read())
+            file_loader = FileSystemLoader('./')
+            env = Environment(loader = file_loader)
+            tmpl_detail = env.get_template('template.html')
             with open('result\\'+savefile_name+'.html', "w", encoding='utf-8') as fp :
-                fp.write(tmpl2.render(root = root, time_list = time_list, file_name = file_name))
+                fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, file_name = file_name, result = result))
                 print(os.getcwd()+"\\"+'result\\'+savefile_name+'.html SAVED')
 
             index+=1
 
+
+
     print("FINISH")
 
-"""
-        stf = open("summarypage_template.html", "r", encoding='utf-8')
-        summarytmpl = Template(stf.read())
+    stf = open("summarypage_template.html", "r", encoding='utf-8')
+    summarytmpl = Template(stf.read())
 
-        print(data_categorized_number)
-        with open('result\\summarypage.html', "w", encoding='utf-8') as fp :
-            fp.write(summarytmpl.render(data = data, time_list = time_list, data_categorized_number = data_categorized_number))
-            print(os.getcwd()+"\\"+"result\\"+"summarypage.html"+" SAVED")
-
-        print("data:", data)
-"""
+    with open('result\\summarypage.html', "w", encoding='utf-8') as fp :
+        fp.write(summarytmpl.render(data = data, time_list = time_list, data_categorized_number = data_categorized_number))
+        print(os.getcwd()+"\\"+"result\\"+"summarypage.html"+" SAVED")
 
 
 

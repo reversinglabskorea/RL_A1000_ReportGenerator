@@ -1,206 +1,63 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="UTF-8">
-  <title> ReversingLabs A1000 Report </title>
-  <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR" rel="stylesheet">
-  <!--
-    <link rel="stylesheet" type="text/css" href="main.css">
--->
-  <style media="screen">
-    body {
-      font-family: 'Noto Sans KR', sans-serif;
-      font-size: 13px;
-      margin: 0;
-    }
+{% extends "detailpage_base.html" %}
+{% block style %}
+.summary-left-fileinfo {
+  width: 25%;
+  float: left;
+}
+.summary-middle {
+  width: 50%;
+  float: left;
+}
+.summary-right-date {
+  width: 25%;
+  float: left;
+  display: block;
+}
+.summary-top {
+  position: relative;
+  overflow: hidden;
+}
+{{ super() }}
+{% endblock %}
+{% block contents %}
 
-    .app-header {
-      height: 80px;
-      position: relative;
-      background-color: #FFF1F1;
-    }
-
-    #left-column {
-      width: 200px;
-      height: -webkit-fill-available;
-      float: left;
-      background-color: white;
-      border-right: 1px solid #eee;
-    }
-
-    #right-column {
-      display: inline;
-      margin: 10px;
-      padding: 8px;
-      width: -webkit-fill-available;
-    }
-
-    #right-section {
-      display: flex;
-    }
-
-    #left-up {
-      background-color: white;
-    }
-
-    .status-circle {
-      background-color: #D00000;
-      width: 1rem;
-      height: 1rem;
-      -webkit-border-radius: 1rem;
-      display: inline-block;
-      margin-right: 0.5rem;
-    }
-
-    #generate-date {
-      font-size: 0.7rem;
-      float: right;
-    }
-
-    table,
-    tr,
-    td {
-      padding: 2px;
-    }
-
-    table {
-      border-style: solid hidden solid hidden;
-      border-top: 1px solid gray;
-      border-bottom: 1px solid gray;
-    }
-
-    #gray {
-      font-size: 0.8rem;
-      padding-right: 20px;
-    }
-
-    #description {
-      margin-top: 25px;
-      font-size: 13px;
-    }
-
-    .skills {
-      text-align: right;
-      padding: 3px;
-      color: white;
-      border-radius: 30px;
-    }
-
-    .container {
-      width: 500px;
-      background-color: #ddd;
-      border-radius: 30px;
-    }
-
-    .av-detection {
-      background-color: #D00000;
-    }
-
-    ul {
-      padding-inline-start: 2px;
-    }
-
-    li {
-      list-style-type: none;
-    }
-
-    #category-list {
-      margin-top: 10px;
-      padding-left: 10px;
-    }
-
-    #categories {
-      padding-left: 12px;
-    }
-
-    .MALICIOUS-circle {
-      background-color: #D00000;
-      width: 0.7rem;
-      height: 0.7rem;
-      -webkit-border-radius: 0.7rem;
-      display: inline-block;
-      margin-right: 0.5rem;
-    }
-
-    .KNOWN-circle {
-      background-color: #94B60A;
-      width: 0.7rem;
-      height: 0.7rem;
-      -webkit-border-radius: 0.7rem;
-      display: inline-block;
-      margin-right: 0.5rem;
-    }
-
-    .UNKNOWN-circle {
-      background-color: #3D3D3D;
-      width: 0.7rem;
-      height: 0.7rem;
-      -webkit-border-radius: 0.7rem;
-      display: inline-block;
-      margin-right: 0.5rem;
-    }
-
-    .SUSPICIOUS-circle {
-      background-color: #F8A80D;
-      width: 0.7rem;
-      height: 0.7rem;
-      -webkit-border-radius: 0.7rem;
-      display: inline-block;
-      margin-right: 0.5rem;
-    }
-
-    a:link {
-      text-decoration: none;
-      color: #000000;
-    }
-
-    a:visited {
-      text-decoration: none;
-      color: #000000;
-    }
-
-    a:active {
-      text-decoration: none;
-      color: #000000;
-    }
-
-    a:hover {
-      text-decoration: none;
-      color: #000000;
-    }
-
-  </style>
-</head>
-
-<body>
-  <section>
-    <div id="left-column">
-      <div id="left-up">
-        <a href="./summarypage.html"> <img src='../resources/logo.png' width="200px"> </a>
-      </div>
-      <ul>
-        <li id="category-list"> <a href="{{ savefile_name }}.html"> <b> Summary </b> </a> </li>
-        <li id="category-list"> <b> Application (PE) </b> </li>
-        {# 파일별로 제공되는 api 정보가 워낙 달라서, for문 조건 적용을 좀 더 고려해야한다. 즉 r0104_dict['metadata']로 접근하면 metadata가 존재하지 않는 경우 바로 에러가 발생함. or API내용이 변경되었나? #}
-        {% set category_var = ['dos_header', 'file_header', 'optional_header', 'sections', 'imports', 'resources'] %}
-        {% for cv in category_var %}
-        <li id="categories"> <a href="{{ savefile_name }}_{{ cv }}.html"> {{ cv|capitalize }} </a> </li>
-        {% endfor %}
-        <li id="category-list"> <a href="{{ savefile_name }}_TiCloud.html"> <b> Titanium Cloud </b> </a> </li>
-      </ul>
+  <h1> file name </h1>
+  <h2> threat_name </h2>
+  <div class="summary-top">
+    <div class="summary-left-fileinfo">
+      <p>
+        Size: file_size <br>
+        Type: file_type / file_subtype <br>
+        Format: Identification_name:Identification_version
+      </p>
     </div>
-  </section>
-  <section id="right-section">
-    <div id="right-column">
-      <div id="generate-date"> Report Generated Date: {{ time_list[0] }} UTC </div>
-      <h1> {{ file_name }} </h1>
-      <div class="file-description">
-      <div id="description">
-        {{ root["story"] }}
-        </div>
-      </div>
+    <div class="summary-middle">
+      <p> middle part </p>
     </div>
-  </section>
-</body>
+    <div class="summary-right-date">
+      <p>
+        First seen: aaaa <br>
+        Last seen: aaaa
+      </p>
+    </div>
+  </div>
+  <h3>
+    <div class="{{ result['threat_status'] }}-circle"></div> {{ result['threat_status'] }}
+  </h3>
+  <table id="hash-value">
+    {% set hash_var = ['md5', 'sha1', 'sha256', 'sha384', 'sha512', 'ripemd160', 'ssdeep', 'imphash'] %}
+    {% for hv in hash_var %}
+    {% if ticore[hv] %}
+    <tr>
+      <td id="gray"> {{ hv }} </td>
+      <td> {{ ticore[hv] }} </td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+  </table>
 
-</html>
+  <div id="description">
+    {{ ticore["story"] }}
+  </div>
+
+{% endblock %}
