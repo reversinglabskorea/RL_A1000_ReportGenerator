@@ -27,6 +27,7 @@
       float: left;
       background-color: white;
       border-right: 1px solid #eee;
+      padding: 10px;
     }
 
     #right-column {
@@ -44,7 +45,7 @@
       background-color: white;
     }
 
-    .MALICIOUS-circle {
+    .malicious-circle {
       background-color: #D00000;
       width: 0.7rem;
       height: 0.7rem;
@@ -53,7 +54,7 @@
       margin-right: 0.5rem;
     }
 
-    .KNOWN-circle {
+    .known-circle {
       background-color: #94B60A;
       width: 0.7rem;
       height: 0.7rem;
@@ -62,7 +63,7 @@
       margin-right: 0.5rem;
     }
 
-    .UNKNOWN-circle {
+    .unknown-circle {
       background-color: #3D3D3D;
       width: 0.7rem;
       height: 0.7rem;
@@ -71,7 +72,7 @@
       margin-right: 0.5rem;
     }
 
-    .SUSPICIOUS-circle {
+    .suspicious-circle {
       background-color: #F8A80D;
       width: 0.7rem;
       height: 0.7rem;
@@ -140,9 +141,12 @@
       margin-top: 10px;
     }
 
-    .cate-list {
-      margin-left: 10px;
+    #menutab-title {
+      text-align: center;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
     }
+
   </style>
 </head>
 
@@ -153,14 +157,14 @@
       <div id="left-up">
         <img src='../resources/logo.png' width="200px">
       </div>
-      <div class="cate-list">
-        <h1> A1000 REPORT </h1>
+      <div>
+        <p id="menutab-title"> A1000 REPORT Summary </p>
         <p> {{ time_list[0] }} UTC <br> {{ time_list[1] }} LOCAL </p>
-        <p> {{ data_categorized_number['UNKNOWN']+data_categorized_number['KNOWN']+data_categorized_number['SUSPICIOUS']+data_categorized_number['MALICIOUS'] }} Files </p>
-        <p> <div class="UNKNOWN-circle"></div> {{ data_categorized_number['UNKNOWN'] }} Unknown </p>
-        <p> <div class="KNOWN-circle"></div> {{ data_categorized_number['KNOWN'] }} Known </p>
-        <p> <div class="SUSPICIOUS-circle"></div> {{ data_categorized_number['SUSPICIOUS'] }} Suspicious </p>
-        <p> <div class="MALICIOUS-circle"></div> {{ data_categorized_number['MALICIOUS'] }} Malicious </p>
+        <p> {{ data_categorized_number['unknown']+data_categorized_number['known']+data_categorized_number['suspicious']+data_categorized_number['malicious'] }} Files </p>
+        <p> <div class="unknown-circle"></div> {{ data_categorized_number['unknown'] }} Unknown </p>
+        <p> <div class="known-circle"></div> {{ data_categorized_number['known'] }} Known </p>
+        <p> <div class="suspicious-circle"></div> {{ data_categorized_number['suspicious'] }} Suspicious </p>
+        <p> <div class="malicious-circle"></div> {{ data_categorized_number['malicious'] }} Malicious </p>
       </div>
 
     </div>

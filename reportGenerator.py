@@ -82,7 +82,7 @@ if __name__ == "__main__":
         index = 1
 
         data = {}
-        data_categorized_number = {"KNOWN":0, "UNKNOWN":0, "SUSPICIOUS":0, "MALICIOUS":0}
+        data_categorized_number = {"known":0, "unknown":0, "suspicious":0, "malicious":0}
 
 
         for f in file_list:
@@ -116,6 +116,8 @@ if __name__ == "__main__":
             savefile_name = str(index)+'_'+file_name
 
             data[hash_code] = [f, result['threat_status'], savefile_name]
+            print(result['threat_status'])
+            data_categorized_number[result['threat_status'].lower()]+=1
 
             ##
             file_loader = FileSystemLoader('./')
