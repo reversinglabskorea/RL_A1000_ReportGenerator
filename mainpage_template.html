@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title> ReversingLabs A1000 Report </title>
+  <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR" rel="stylesheet">
+  <!--
+    <link rel="stylesheet" type="text/css" href="main.css">
+-->
+  <style media="screen">
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .app-header {
+      height: 80px;
+      position: relative;
+      background-color: #FFF1F1;
+    }
+
+    #left-column {
+      width: 200px;
+      height: -webkit-fill-available;
+      float: left;
+      background-color: white;
+      border-right: 1px solid #eee;
+      padding: 10px;
+    }
+
+    #right-column {
+      display: inline;
+      margin: 10px;
+      padding: 8px;
+      width: -webkit-fill-available;
+    }
+
+    #right-section {
+      display: flex;
+    }
+
+    #left-up {
+      background-color: white;
+    }
+
+    .malicious-circle {
+      background-color: #D00000;
+      width: 0.7rem;
+      height: 0.7rem;
+      -webkit-border-radius: 0.7rem;
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+
+    .known-circle {
+      background-color: #94B60A;
+      width: 0.7rem;
+      height: 0.7rem;
+      -webkit-border-radius: 0.7rem;
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+
+    .unknown-circle {
+      background-color: #3D3D3D;
+      width: 0.7rem;
+      height: 0.7rem;
+      -webkit-border-radius: 0.7rem;
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+
+    .suspicious-circle {
+      background-color: #F8A80D;
+      width: 0.7rem;
+      height: 0.7rem;
+      -webkit-border-radius: 0.7rem;
+      display: inline-block;
+      margin-right: 0.5rem;
+    }
+
+    #generate-date {
+      font-size: 0.7rem;
+      float: right;
+    }
+
+    table,
+    tr,
+    td {
+      padding: 5px;
+    }
+
+    td {
+      padding-right: 30px;
+    }
+
+    table {
+      border-style: solid hidden solid hidden;
+      border-top: 1px solid gray;
+      border-bottom: 1px solid gray;
+    }
+
+    #gray {
+      font-size: 0.8rem;
+    }
+
+    #description {
+      margin-top: 25px;
+      font-size: 13px;
+    }
+
+    .skills {
+      text-align: right;
+      padding: 3px;
+      color: white;
+      border-radius: 30px;
+    }
+
+    .container {
+      width: 100%;
+      background-color: #ddd;
+      border-radius: 30px;
+    }
+
+    .av-detection {
+      width: 69%;
+      background-color: #D00000;
+    }
+
+    ul {
+      padding-inline-start: 2px;
+    }
+
+    li {
+      list-style-type: none;
+    }
+
+    #category-list {
+      margin-top: 10px;
+    }
+
+    #menutab-title {
+      text-align: center;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 10px;
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <section>
+    <div id="left-column">
+      <div id="left-up">
+        <img src='../resources/logo.png' width="200px">
+      </div>
+      <div>
+        <p id="menutab-title"> A1000 REPORT Summary </p>
+        <p> {{ time_list[0] }} UTC <br> {{ time_list[1] }} LOCAL </p>
+        <p> {{ data_categorized_number['unknown']+data_categorized_number['known']+data_categorized_number['suspicious']+data_categorized_number['malicious'] }} Files </p>
+        <p> <div class="unknown-circle"></div> {{ data_categorized_number['unknown'] }} Unknown </p>
+        <p> <div class="known-circle"></div> {{ data_categorized_number['known'] }} Known </p>
+        <p> <div class="suspicious-circle"></div> {{ data_categorized_number['suspicious'] }} Suspicious </p>
+        <p> <div class="malicious-circle"></div> {{ data_categorized_number['malicious'] }} Malicious </p>
+      </div>
+
+    </div>
+  </section>
+  <section id="right-section">
+    <div id="right-column">
+      <!-- <div id="generate-date"> Report Generated Date: 2019-03-07 14:23 UTC </div> -->
+
+      <table id="hash-value">
+        <tr>
+          <th> Malware Presence </th>
+          <th> Local Address </th>
+          <th> Hash (SHA1) </th>
+        </tr>
+        {%- for d in data %}
+        <tr>
+         <td id="gray"> <div class="{{data[d][1]}}-circle"></div> {{ data[d][1] }} </td>
+         <td> {{ data[d][0] }} </td>
+         <td> <a href="{{ data[d][2] }}.html"> {{ d }} </a> </td>
+        </tr>
+        {%- endfor %}
+
+
+      </table>
+    </div>
+  </section>
+  </body>
+
+</html>

@@ -191,6 +191,11 @@
       <p id="menutab-title"> ReversingLabs A1000 Report </p>
       <ul>
         <li id="category-list"> <a href="{{ savefile_name }}.html"> <b> Summary </b> </a> </li>
+        <li id="category-list"> <b> Info </b> </li>
+        {% set info_var = ['file', 'hashes', 'package', 'statistics'] %}
+        {% for iv in info_var %}
+        <li id="categories"> <a href="{{ savefile_name }}+info_{{iv}}.html"> {{ iv|capitalize }}</li>
+        {% endfor %}
         <li id="category-list"> <b> Application (PE) </b> </li>
         {% set category_var = ['dos_header', 'file_header', 'optional_header', 'sections', 'imports', 'resources'] %}
         {% for cv in category_var %}

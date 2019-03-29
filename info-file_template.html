@@ -1,0 +1,29 @@
+{% extends "detailpage_base.html" %}
+{% block style %}
+{{ super() }}
+{% endblock %}
+{% block contents %}
+
+<h1> File </h1>
+<table>
+  <tr>
+    <td id="gray"> File type </td>
+    <td> {{ ticore['info']['file']['file_type'] }} /
+      {% if ticore['info']['file']['file_subtype'] %}
+    {{ ticore['info']['file']['file_subtype'] }} {% endif %}</td>
+  </tr>
+  <tr>
+    <td id="gray"> Identification </td>
+    <td> {{ ticore['info']['identification']['name'] }} : {{ ticore['info']['identification']['version'] }}</td>
+  </tr>
+  <tr>
+    <td id="gray"> File Size </td>
+    <td> {{ result['file_size'] }} </td>
+  </tr>
+  <tr>
+    <td id="gray"> Entropy </td>
+    <td> {{ ticore['info']['file']['entropy'] }} </td>
+  </tr>
+</table>
+
+{% endblock %}
