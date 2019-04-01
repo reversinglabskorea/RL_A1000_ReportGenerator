@@ -160,6 +160,17 @@ if __name__ == "__main__":
                         fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result))
                         print(os.getcwd()+"\\result\\%s+info_hashes.html SAVED" % savefile_name)
 
+                    # write app-capabilities Page
+                    try:
+                        capabilities = ticore['application']['capabilities']
+                        tmpl_detail = env.get_template('app-capabilities.html')
+                        with open('result\\%s+capabilities.html' % savefile_name, "w", encoding='utf-8') as fp :
+                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, capabilities = capabilities))
+                            print(os.getcwd()+"\\result\\%s+capabilities.html SAVED" % savefile_name)
+
+                    except KeyError:
+                        print("Key Capabilities not found")
+
                     # write app-dos_header page
                     try:
                         dos_header_dict = ticore['application']['pe']['dos_header']

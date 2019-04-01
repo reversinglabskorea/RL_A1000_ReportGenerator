@@ -12,10 +12,12 @@
       {% if ticore['info']['file']['file_subtype'] %}
     {{ ticore['info']['file']['file_subtype'] }} {% endif %}</td>
   </tr>
+  {% if ticore['info']['identification'] %}
   <tr>
     <td id="gray"> Identification </td>
     <td> {{ ticore['info']['identification']['name'] }} : {{ ticore['info']['identification']['version'] }}</td>
   </tr>
+  {% endif %}
   <tr>
     <td id="gray"> File Size </td>
     <td> {{ result['file_size'] }} </td>

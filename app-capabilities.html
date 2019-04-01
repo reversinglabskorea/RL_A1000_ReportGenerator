@@ -1,0 +1,22 @@
+{% extends "detailpage_base.html" %}
+{% block style %}
+#capa-True {
+  color: black;
+  margin: 2px;
+}
+#capa-False {
+  color: lightgray;
+  margin: 2px;
+}
+{{ super() }}
+{% endblock %}
+{% block contents %}
+
+<h1> Capabilities </h1>
+<ul>
+  {% for capa in capabilities %}
+    <li id="capa-{{capa[1]}}"> {{ capa[0]|capitalize }} </li>
+  {% endfor %}
+</ul>
+
+{% endblock %}

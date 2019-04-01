@@ -2,9 +2,10 @@
 {% block style %} {{ super() }} {% endblock %}
 {% block contents %}
 
+<h1> DOS header </h1>
 <table>
   {% for dh_key in dos_header_keys %}
-  <tr>    
+  <tr>
     <td id="gray"> {{ dh_key }} </td>
     <td> {{ ticore['application']['pe']['dos_header'][dh_key] }} </td>
   </tr>
