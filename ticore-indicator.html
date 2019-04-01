@@ -1,0 +1,17 @@
+{% extends "detailpage_base.html" %}
+{% block style %}
+{{ super() }}
+{% endblock %}
+{% block contents %}
+
+<h1> Indicators </h1>
+{% for key in indicators %}
+<ul>
+  {{ key }}
+  {% for l in indicators[key] %}
+  <li> {{ l }} </li>
+  {% endfor %}
+</ul>
+{% endfor %}
+
+{% endblock %}

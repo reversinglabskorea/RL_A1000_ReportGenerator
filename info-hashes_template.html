@@ -1,0 +1,17 @@
+{% extends "detailpage_base.html" %}
+{% block style %}
+{{ super() }}
+{% endblock %}
+{% block contents %}
+
+<h1> Hashes </h1>
+<table>
+  {% for hash in ticore['info']['file']['hashes'] %}
+ <tr>
+   <td id="gray"> {{ hash['name'] }} </td>
+   <td> {{ hash['value'] }} </td>
+ </tr>
+ {% endfor %}
+</table>
+
+{% endblock %}

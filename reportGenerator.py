@@ -99,7 +99,7 @@ if __name__ == "__main__":
                 hash_code = response_json["detail"]['sha1']
                 file_name = os.path.basename(f)
 
-            #print("hash_code:", hash_code)
+            print(index, '/', len(file_list), '| Generating report -', file_name)
 
             ticoredata = requests.get('%s/api/samples/%s/ticore/' % (addr, hash_code),
                             headers = {'Authorization': 'Token %s' % token})
@@ -111,9 +111,9 @@ if __name__ == "__main__":
                    "classification_origin", "classification_reason",\
                    "threat_status", "trust_factor", "threat_level", "threat_name",\
                    "summary", "ticloud", "aliases"]}
-            print(post_data)
+
             listdata = requests.post('%s/api/samples/list/' % addr,
-                            data=post_data,
+                            data = post_data,
                             headers = {'Authorization': 'Token %s' % token})
 
             if listdata.status_code != 200:
@@ -126,14 +126,21 @@ if __name__ == "__main__":
                 else:
                     result = result['results'][0]
 
+                    # for detail page
                     savefile_name = str(index)+'_'+file_name
 
+                    # for summary page
                     data[hash_code] = [f, result['threat_status'], savefile_name]
                     data_categorized_number[result['threat_status'].lower()]+=1
 
+                    # data processing
                     filesize_formatted = format_bytes(result['file_size'])
                     result['file_size'] = filesize_formatted
-                    ##
+
+                    # make menu dict
+                    ticore_keys = list(ticore.keys())
+
+                    # write summary page
                     file_loader = FileSystemLoader('./')
                     env = Environment(loader = file_loader)
                     tmpl_detail = env.get_template('summarypage_template.html')
@@ -141,23 +148,60 @@ if __name__ == "__main__":
                         fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result))
                         print(os.getcwd()+"\\result\\%s.html SAVED" % savefile_name)
 
+                    # write info-file page
                     tmpl_detail2 = env.get_template('info-file_template.html')
                     with open('result\\%s+info_file.html' % savefile_name, "w", encoding='utf-8') as fp :
                         fp.write(tmpl_detail2.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result))
                         print(os.getcwd()+"\\result\\%s+info_file.html SAVED" % savefile_name)
 
+                    # write info-hashes page
+                    tmpl_detail = env.get_template('info-hashes_template.html')
+                    with open('result\\%s+info_hashes.html' % savefile_name, "w", encoding='utf-8') as fp :
+                        fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result))
+                        print(os.getcwd()+"\\result\\%s+info_hashes.html SAVED" % savefile_name)
+
+                    # write app-dos_header page
+                    try:
+                        dos_header_dict = ticore['application']['pe']['dos_header']
+                        dos_header_keys = list(dos_header_dict.keys())
+
+                        for k in dos_header_keys:
+                            if type(dos_header_dict[k]) is int :
+                                dos_header_dict[k] = "0x{:08x}".format(dos_header_dict[k])
+
+                        tmpl_detail3 = env.get_template('app-dos_header.html')
+                        with open('result\\%s+dos_header.html' % savefile_name, "w", encoding='utf-8') as fp :
+                            fp.write(tmpl_detail3.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, dos_header_keys = dos_header_keys ))
+                            print(os.getcwd()+"\\result\\%s+dos_header.html SAVED" % savefile_name)
+
+                    except KeyError:
+                        print("Key dos_header not found")
+
+                    # write indicator page
+                    if len(ticore['indicators']) is not 0 :
+                        indicators = {}
+                        for i in ticore['indicators']:
+                            if i['category'] in indicators:
+                                indicators[i['category']].append(i['description'])
+                            else:
+                                indicators[i['category']] = [i['description']]
+                        tmpl_detail = env.get_template('ticore-indicator.html')
+                        with open('result\\%s+indicator.html' % savefile_name, "w", encoding='utf-8') as fp :
+                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, indicators = indicators))
+                            print(os.getcwd()+"\\result\\%s+indicator.html SAVED" % savefile_name)
+
                     index+=1
+
+
+
+    print("Generating Summary Report Page ...")
 
     stf = open("mainpage_template.html", "r", encoding='utf-8')
     summarytmpl = Template(stf.read())
-
     with open('result\\summarypage.html', "w", encoding='utf-8') as fp :
         fp.write(summarytmpl.render(data = data, time_list = time_list, data_categorized_number = data_categorized_number))
         print(os.getcwd()+"\\"+"result\\"+"summarypage.html"+" SAVED")
 
-    print("FINISH")
-
-
-
+    print("Complete to generate", index-1, "files")
 
 ### "0x{:08x}".format(1998848) (Hex)
