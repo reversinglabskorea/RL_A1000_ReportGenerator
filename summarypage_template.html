@@ -5,17 +5,20 @@
   float: left;
 }
 .summary-middle {
-  width: 50%;
+  width: 40%;
   float: left;
 }
 .summary-right-date {
-  width: 25%;
+  width: 35%;
   float: left;
   display: block;
 }
 .summary-top {
   position: relative;
   overflow: hidden;
+}
+.status_header {
+  margin: 0;
 }
 {{ super() }}
 {% endblock %}
@@ -34,18 +37,38 @@
       </p>
     </div>
     <div class="summary-middle">
-      <p> middle part </p>
+      <h3 class="status_header">
+        <div class="{{ result['threat_status'] }}-circle"></div> {{ result['threat_status'] }}
+      </h3>
+      {% if result['threat_status'] %}
+        {% if result['threat_status'] == 'known' %}
+        <p> Confidence : {{ 5-result['trust_factor'] }} <br>
+          {% set tf = 5-result['trust_factor'] %}
+          {% if tf == 0 or tf == 1 %}
+          Whitelisted / Reputable Origin
+          {% elif tf == 2 or tf == 3 %}
+          Likely Benign / Public Origin
+          {% elif tf == 4 or tf == 5 %}
+          Not a known threat / Unverified Origin
+          {% endif %} </p>
+        {% elif result['threat_status'] == 'malicious' or result['threat_status'] == 'suspicious'%}
+        <p> Severity : {{ result['threat_level'] }} </p>
+        {% elif result['threat_status'] == 'unknown' %}
+        <p> No Classification </p>
+        {% endif %}
+      {% endif %}
     </div>
     <div class="summary-right-date">
       <p>
-        First seen: aaaa <br>
-        Last seen: aaaa
+
+        {% if result['ticloud'] %}
+         Cloud First Seen: {{ result['ticloud']['first_seen'] }}
+         {% else %} Local First Seen: {{ result['local_first_seen'] }} {% endif %} <br>
+        Local Last Seen: {{ result['local_last_seen'] }}
       </p>
     </div>
   </div>
-  <h3>
-    <div class="{{ result['threat_status'] }}-circle"></div> {{ result['threat_status'] }}
-  </h3>
+
   <table id="hash-value">
     {% set hash_var = ['md5', 'sha1', 'sha256', 'sha384', 'sha512', 'ripemd160', 'ssdeep', 'imphash'] %}
     {% for hv in hash_var %}

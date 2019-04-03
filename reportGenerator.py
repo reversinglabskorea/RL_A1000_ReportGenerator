@@ -62,6 +62,35 @@ def get_utc_local_time():
 
     return time_list
 
+def get_indicator_dict():
+    indicator_dict = { 0: ['NETWORK', 'Has network related indicators'], \
+                        1: ['EVASION', 'Tries to evade common debuggers/sandboxes/analysis tools'],\
+                        2: ['STEALTH', 'Tries to hide its presence'],\
+                        3: ['AUTOSTART', 'Tampers with autostart settings'],\
+                        4: ['MEMORY', 'Tampers with memory of foreign processes'],\
+                        5: [],\
+                        6: ['ANOMALY', 'Contains unusual characteristics'],\
+                        7: ['MONITOR', 'Able to monitor host activities'],\
+                        8: [],\
+                        9: ['REGISTRY', 'Accesses registry and configuration files in an unusual way'],\
+                        10: ['EXECUTION', 'Creates other processes or starts other applications'],\
+                        11: ['PERMISSIONS', 'Tampers with or requires permissions'],\
+                        12: ['SEARCH', 'Enumerates or collects information from a system'],\
+                        13: ['SETTINGS', 'Tampers with system settings'],\
+                        14: ['MACRO', 'Contains macro functions or scripts'],\
+                        15: [],\
+                        16: [],\
+                        17: ['SIGNATURE', 'Matches a known signature'],\
+                        18: ['STEAL', 'Steals and leaks sensitive information'],\
+                        19: [],\
+                        20: [],\
+                        21: [],\
+                        22: ['FILE', 'Accesses files in an unusual way'],\
+                        }
+
+    return indicator_dict
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='ReversingLabs Korea - Report Generator Using A1000 api')
     parser.add_argument('--auth', metavar='AUTH', required=True, help='auth data file')
@@ -140,6 +169,8 @@ if __name__ == "__main__":
                     # make menu dict
                     ticore_keys = list(ticore.keys())
 
+                    print("result status:", result['threat_status'])
+
                     # write summary page
                     file_loader = FileSystemLoader('./')
                     env = Environment(loader = file_loader)
@@ -188,6 +219,23 @@ if __name__ == "__main__":
                     except KeyError:
                         print("Key dos_header not found")
 
+                    # write app-file_header Page
+                    try:
+                        file_header_dict = ticore['application']['pe']['file_header']
+                        file_header_keys = list(file_header_dict.keys())
+
+                        for k in file_header_keys:
+                            if k == "pointer_to_symbol_table" or k == "number_of_symbols" or k == "size_of_optional_headers" or k == "time_date_stamp" :
+                                file_header_dict[k] = "0x{:08x}".format(file_header_dict[k])
+
+                        tmpl_detail = env.get_template('app-file_header.html')
+                        with open('result\\%s+file_header.html' % savefile_name, "w", encoding='utf-8') as fp :
+                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, file_header_keys = file_header_keys))
+                            print(os.getcwd()+"\\result\\%s+file_header.html SAVED" % savefile_name)
+
+                    except KeyError:
+                        print("Key dos_header not found")
+
                     # write indicator page
                     if len(ticore['indicators']) is not 0 :
                         indicators = {}
@@ -196,14 +244,13 @@ if __name__ == "__main__":
                                 indicators[i['category']].append(i['description'])
                             else:
                                 indicators[i['category']] = [i['description']]
+                        indicator_dict = get_indicator_dict()
                         tmpl_detail = env.get_template('ticore-indicator.html')
                         with open('result\\%s+indicator.html' % savefile_name, "w", encoding='utf-8') as fp :
-                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, indicators = indicators))
+                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, indicators = indicators, indicator_dict = indicator_dict))
                             print(os.getcwd()+"\\result\\%s+indicator.html SAVED" % savefile_name)
 
                     index+=1
-
-
 
     print("Generating Summary Report Page ...")
 

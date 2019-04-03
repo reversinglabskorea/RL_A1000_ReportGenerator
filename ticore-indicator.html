@@ -1,17 +1,39 @@
 {% extends "detailpage_base.html" %}
 {% block style %}
+.indicator-block {
+  margin-bottom: 10px;
+}
+.indicator-name {
+  font-size: 1.2em;
+  display: inline-block;
+}
+.indicator-description {
+  color: gray;
+  display: inline-block;
+}
+.indicator-list {
+  margin-top: 1px;
+}
+.indicator-li {
+  list-style-type: square;
+  margin-left: 1.5em;
+}
 {{ super() }}
 {% endblock %}
 {% block contents %}
 
 <h1> Indicators </h1>
 {% for key in indicators %}
-<ul>
-  {{ key }}
+<div class="indicator-block">
+  {% if indicator_dict[key] %}
+  <div class="indicator-name"> {{ indicator_dict[key][0] }}</div> - <div class="indicator-description"> {{ indicator_dict[key][1] }} </div>
+  {% endif %}
+  <ul class="indicator-list">
   {% for l in indicators[key] %}
-  <li> {{ l }} </li>
+  <li class="indicator-li"> {{ l }} </li>
   {% endfor %}
-</ul>
+  </ul>
+</div>
 {% endfor %}
 
 {% endblock %}
