@@ -1,0 +1,15 @@
+{% extends "detailpage_base.html" %}
+{% block style %} {{ super() }} {% endblock %}
+{% block contents %}
+
+<h1> Version Info </h1>
+<table>
+  {% for vi in ticore['application']['pe']['version_info'] %}
+  <tr>
+    <td id="gray"> {{ vi['name'] }} </td>
+    <td> {{ vi['value'] }} </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}

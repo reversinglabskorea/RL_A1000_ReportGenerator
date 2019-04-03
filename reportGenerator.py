@@ -236,6 +236,18 @@ if __name__ == "__main__":
                     except KeyError:
                         print("Key dos_header not found")
 
+                    # write app-version_info page
+                    try:
+                        version_info = ticore['application']['pe']['version_info']
+                        
+                        tmpl_detail = env.get_template('app-version_info.html')
+                        with open('result\\%s+version_info.html' % savefile_name, "w", encoding='utf-8') as fp :
+                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result))
+                            print(os.getcwd()+"\\result\\%s+version_info.html SAVED" % savefile_name)
+
+                    except KeyError:
+                        print("Key dos_header not found")
+
                     # write indicator page
                     if len(ticore['indicators']) is not 0 :
                         indicators = {}
