@@ -1,0 +1,38 @@
+{% extends "detailpage_base.html" %}
+{% block style %}
+.imports-block {
+  margin-bottom: 10px;
+  border-bottom: 1px dotted lightgray;
+}
+.imports-name {
+  font-size: 1.2em;
+  display: inline-block;
+}
+.imports-description {
+  color: gray;
+  display: inline-block;
+}
+.imports-list {
+  margin-top: 1px;
+}
+.imports-li {
+  list-style-type: square;
+  margin-left: 1.5em;
+}
+{{ super() }}
+{% endblock %}
+{% block contents %}
+
+<h1> Imports </h1>
+{% for i in imports %}
+<div class="imports-block">
+  <div class="imports-name"> {{ i['name'] }}</div>
+  <ul class="imports-list">
+  {% for a in i['apis'] %}
+  <li class="imports-li"> {{ a }} </li>
+  {% endfor %}
+  </ul>
+</div>
+{% endfor %}
+
+{% endblock %}

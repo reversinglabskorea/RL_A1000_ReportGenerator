@@ -1,0 +1,48 @@
+{% extends "detailpage_base.html" %}
+{% block style %}
+.sections-block {
+  margin-bottom: 10px;
+}
+.sections-name {
+  font-size: 1.2em;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+.sections-description {
+  color: gray;
+  display: inline-block;
+}
+.sections-list {
+  margin-top: 1px;
+}
+.sections-li {
+  list-style-type: square;
+  margin-left: 1.5em;
+}
+{{ super() }}
+{% endblock %}
+{% block contents %}
+
+<h1> Sections </h1>
+{% for s in sections %}
+<div class="sections-block">
+  <div class="sections-name"> {{ s['name']|capitalize }}</div>
+  <table>
+    {% set keys = ['flags', 'size', 'address', 'offset', 'entropy'] %}
+    {% for k in keys %}
+    <tr>
+      <td id="gray"> {{ k|capitalize }} </td>
+      <td>{{ s[k] }}</td>
+    </tr>
+    {% endfor %}
+    {% for hash in s['hashes'] %}
+    <tr>
+      <td id="gray"> {{ hash['name'] }} </td>
+      <td> {{ hash['value'] }} </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endfor %}
+
+{% endblock %}

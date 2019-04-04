@@ -234,19 +234,48 @@ if __name__ == "__main__":
                             print(os.getcwd()+"\\result\\%s+file_header.html SAVED" % savefile_name)
 
                     except KeyError:
-                        print("Key dos_header not found")
+                        print("Key file_header not found")
 
                     # write app-version_info page
                     try:
                         version_info = ticore['application']['pe']['version_info']
-                        
+
                         tmpl_detail = env.get_template('app-version_info.html')
                         with open('result\\%s+version_info.html' % savefile_name, "w", encoding='utf-8') as fp :
                             fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result))
                             print(os.getcwd()+"\\result\\%s+version_info.html SAVED" % savefile_name)
 
                     except KeyError:
-                        print("Key dos_header not found")
+                        print("Key version_info not found")
+
+                    # write app-imports page
+                    try:
+                        imports = ticore['application']['pe']['imports']
+
+                        tmpl_detail = env.get_template('app-imports.html')
+                        with open('result\\%s+imports.html' % savefile_name, "w", encoding='utf-8') as fp :
+                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, imports = imports))
+                            print(os.getcwd()+"\\result\\%s+imports.html SAVED" % savefile_name)
+
+                    except KeyError:
+                        print("Key imports not found")
+
+                    # write app-sections page
+                    try:
+                        sections = ticore['application']['pe']['sections']
+                        
+                        for section in sections :
+                            section['size'] = format_bytes(section['size'])
+                            section['address'] = "0x{:08x}".format(section['address'])
+                            section['offset'] = "0x{:08x}".format(section['offset'])
+
+                        tmpl_detail = env.get_template('app-sections.html')
+                        with open('result\\%s+sections.html' % savefile_name, "w", encoding='utf-8') as fp :
+                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, sections = sections))
+                            print(os.getcwd()+"\\result\\%s+sections.html SAVED" % savefile_name)
+
+                    except KeyError:
+                        print("Key sections not found")
 
                     # write indicator page
                     if len(ticore['indicators']) is not 0 :
