@@ -96,6 +96,40 @@ def is_empty(var):
     else:
         return True
 
+def make_menu(ticore):
+    ticore_keys_all = list(ticore.keys())
+    ticore_keys = []
+    for key in ticore_keys_all:
+        if is_empty(ticore[key]) is False:
+            ticore_keys.append(key)
+
+    ticore_menu = {}
+
+    if 'info' in ticore_keys:
+        info_sub = []
+        if 'file' in ticore['info']:
+            info_sub.append('file')
+        if 'hashes' in ticore['info']['file']:
+            info_sub.append('hashes')
+        ticore_menu['info'] = info_sub
+
+    app_data = ['dos_header', 'file_header', 'sections', 'imports', 'resources', 'version_info']
+    if 'application' in ticore_keys:
+        app_sub = []
+        if 'capabilities' in ticore['application']:
+            app_sub.append('capabilities')
+        for ad in app_data:
+            if ad in ticore['application']['pe']:
+                app_sub.append(ad)
+        ticore_menu['application'] = app_sub
+
+    print('ticore_menu:', ticore_menu)
+    return ticore_menu
+    # need to add protection, certificate, strings, interesting_strings, classification, ..
+
+
+    return ticore_keys
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='ReversingLabs Korea - Report Generator Using A1000 api')
     parser.add_argument('--auth', metavar='AUTH', required=True, help='auth data file')
@@ -172,14 +206,9 @@ if __name__ == "__main__":
                     result['file_size'] = filesize_formatted
 
                     # make menu dict
-                    ticore_keys = list(ticore.keys())
-                    not_empty_index = []
-                    for key in ticore_keys:
-                        if is_empty(ticore[key]) is False:
-                            not_empty_index.append(key)
-                            #not_empty_index.append(ticore_keys.index(key))
+                    menu_keys = make_menu(ticore)
+                    print("menukeys:", menu_keys)
 
-                    print(not_empty_index)
                     # for file writing
                     file_loader = FileSystemLoader('./')
                     env = Environment(loader = file_loader)
@@ -305,7 +334,7 @@ if __name__ == "__main__":
                             print(os.getcwd()+"\\result\\%s+resources.html SAVED" % savefile_name)
 
                     except KeyError:
-                        print("Key sections not found")
+                        print("Key resources not found")
 
                     # write indicator page
                     if len(ticore['indicators']) is not 0 :
