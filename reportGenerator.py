@@ -39,7 +39,7 @@ def get_upload_file_list(fileaddr):
         print("IOError:", err)
 
 def format_bytes(bytes_num):
-    sizes = [ "B", "KB", "MB", "GB", "TB" ]
+    sizes = [ "bytes", "KB", "MB", "GB", "TB" ]
 
     i = 0
     dblbyte = bytes_num
@@ -90,6 +90,11 @@ def get_indicator_dict():
 
     return indicator_dict
 
+def is_empty(var):
+    if var:
+        return False
+    else:
+        return True
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='ReversingLabs Korea - Report Generator Using A1000 api')
@@ -168,12 +173,18 @@ if __name__ == "__main__":
 
                     # make menu dict
                     ticore_keys = list(ticore.keys())
+                    not_empty_index = []
+                    for key in ticore_keys:
+                        if is_empty(ticore[key]) is False:
+                            not_empty_index.append(key)
+                            #not_empty_index.append(ticore_keys.index(key))
 
-                    print("result status:", result['threat_status'])
-
-                    # write summary page
+                    print(not_empty_index)
+                    # for file writing
                     file_loader = FileSystemLoader('./')
                     env = Environment(loader = file_loader)
+
+                    # write summary page
                     tmpl_detail = env.get_template('summarypage_template.html')
                     with open('result\\%s.html' % savefile_name , "w", encoding='utf-8') as fp :
                         fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result))
@@ -263,7 +274,7 @@ if __name__ == "__main__":
                     # write app-sections page
                     try:
                         sections = ticore['application']['pe']['sections']
-                        
+
                         for section in sections :
                             section['size'] = format_bytes(section['size'])
                             section['address'] = "0x{:08x}".format(section['address'])
@@ -273,6 +284,25 @@ if __name__ == "__main__":
                         with open('result\\%s+sections.html' % savefile_name, "w", encoding='utf-8') as fp :
                             fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, sections = sections))
                             print(os.getcwd()+"\\result\\%s+sections.html SAVED" % savefile_name)
+
+                    except KeyError:
+                        print("Key sections not found")
+
+                    # write app-resources page
+                    try:
+                        resources = ticore['application']['pe']['resources']
+
+                        for resource in resources:
+                            resource['language_id'] = "0x{:08x}".format(resource['language_id'])
+                            resource['code_page'] = "0x{:08x}".format(resource['code_page'])
+                            resource['offset'] = "0x{:08x}".format(resource['offset'])
+                            resource['size'] = format_bytes(resource['size'])
+
+
+                        tmpl_detail = env.get_template('app-resources.html')
+                        with open('result\\%s+resources.html' % savefile_name, "w", encoding='utf-8') as fp :
+                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, resources = resources))
+                            print(os.getcwd()+"\\result\\%s+resources.html SAVED" % savefile_name)
 
                     except KeyError:
                         print("Key sections not found")

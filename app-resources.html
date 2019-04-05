@@ -1,0 +1,48 @@
+{% extends "detailpage_base.html" %}
+{% block style %}
+.resources-block {
+  margin-bottom: 10px;
+}
+.resources-name {
+  font-size: 1.2em;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+.resources-description {
+  color: gray;
+  display: inline-block;
+}
+.resources-list {
+  margin-top: 1px;
+}
+.resources-li {
+  list-style-type: square;
+  margin-left: 1.5em;
+}
+{{ super() }}
+{% endblock %}
+{% block contents %}
+
+<h1> resources </h1>
+{% for r in resources %}
+<div class="resources-block">
+  <div class="resources-name"> {{ r['name'] }} ({{ r['type'] }})</div>
+  <table>
+    {% set keys = ['type', 'language_id_name', 'language_id', 'code_page', 'offset', 'size'] %}
+    {% for k in keys %}
+    <tr>
+      <td id="gray"> {{ k.replace("_", " ").capitalize() }} </td>
+      <td>{{ r[k] }}</td>
+    </tr>
+    {% endfor %}
+    {% for hash in r['hashes'] %}
+    <tr>
+      <td id="gray"> {{ hash['name'] }} </td>
+      <td> {{ hash['value'] }} </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endfor %}
+
+{% endblock %}
