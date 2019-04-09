@@ -4,7 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <title> ReversingLabs A1000 Report </title>
+  {% block head %}
+  {% endblock %}
   <link href="https://fonts.googleapis.com/css?family=Noto+Sans+KR" rel="stylesheet">
+
   <style media="screen">
     {% block style %}
 
@@ -93,7 +96,6 @@
     }
 
     .container {
-      width: 500px;
       background-color: #ddd;
       border-radius: 30px;
     }

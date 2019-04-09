@@ -1,0 +1,62 @@
+{% extends "detailpage_base.html" %}
+{% block head %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.js"> </script>
+{% endblock %}
+{% block style %}
+{{ super() }}
+#myChart {
+  width: 100px;
+  height: 100px;
+}
+.hi {
+  width: 500px;
+  height: 500px;
+}
+{% endblock %}
+{% block contents %}
+
+<h1> Embedded File Type Statistics ({{ tc_info_stat['file_count'] }} Files)</h1>
+
+<div class="hi">
+      <canvas id="myChart" width="100" height="100"></canvas>
+</div>
+
+<script>
+
+
+function getRandomColor() {
+   var letters = '0123456789ABCDEF'.split('');
+   var color = '#';
+   for (var i = 0; i < 6; i++ ) {
+       color += letters[Math.floor(Math.random() * 16)];
+   }
+   return color;
+}
+
+var ctx = document.getElementById('myChart');
+var myChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: {{ tc_info_stat['types'] }},
+        datasets: [{
+            label: '# of Votes',
+            data: {{ tc_info_stat['counts'] }},
+            backgroundColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(20, 99, 67, 1)',
+                'rgba(255, 99, 32, 1)',
+                'rgba(55, 2, 12, 1)',
+                'rgba(22, 99, 34, 1)',
+                'rgba(215, 91, 26, 1)',
+                'rgba(141, 33, 132, 1)'
+            ],
+            borderColor: [
+                'rgba(255, 255, 255, 1)'
+            ],
+            borderWidth: 1
+        }]
+    }
+});
+</script>
+
+{% endblock %}

@@ -119,6 +119,8 @@ def make_menu(ticore, r0101, r0104):
             info_sub.append('file')
         if 'hashes' in ticore['info']['file']:
             info_sub.append('hashes')
+        if 'statistics' in ticore['info']:
+            info_sub.append('statistics')
         ticore_menu['info'] = info_sub
 
     app_data = ['dos_header', 'file_header', 'sections', 'imports', 'resources', 'version_info']
@@ -236,6 +238,26 @@ if __name__ == "__main__":
                     filesize_formatted = format_bytes(result['file_size'])
                     result['file_size'] = filesize_formatted
 
+                    # for Statistics
+                    tc_info_stat = {}
+                    file_count = 0
+                    counts = []
+                    types = []
+                    for fs in ticore['info']['statistics']['file_stats']:
+                        file_count += fs['count']
+                        counts.append(fs['count'])
+                        if fs['subtype'] is 'None' :
+                            tc_filetype = fs['type']
+                        else:
+                            tc_filetype = fs['type']+'/'+fs['subtype']
+                        types.append(tc_filetype)
+
+                    tc_info_stat['file_count'] = file_count
+                    print('counts', counts)
+                    print('types', types)
+                    tc_info_stat['counts'] = counts
+                    tc_info_stat['types'] = types
+
                     # make menu dict
                     ticore_menu = make_menu(ticore, r0101_text, r0104_text)
 
@@ -260,6 +282,12 @@ if __name__ == "__main__":
                     with open('result\\%s+info_hashes.html' % savefile_name, "w", encoding='utf-8') as fp :
                         fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu))
                         print(os.getcwd()+"\\result\\%s+info_hashes.html SAVED" % savefile_name)
+
+                    # write info-statistics page
+                    tmpl_detail = env.get_template('info-statistics.html')
+                    with open('result\\%s+info_statistics.html' % savefile_name, "w", encoding='utf-8') as fp :
+                        fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, tc_info_stat = tc_info_stat))
+                        print(os.getcwd()+"\\result\\%s+info_statistics.html SAVED" % savefile_name)
 
                     # write app-capabilities Page
                     try:

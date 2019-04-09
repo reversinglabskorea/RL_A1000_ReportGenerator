@@ -5,8 +5,11 @@
   float: left;
 }
 .summary-middle {
-  width: 40%;
+  width: 30%;
   float: left;
+  padding-right: 5%;
+  padding-left: 5%;
+  padding-bottom: 10px;
 }
 .summary-right-date {
   width: 35%;
@@ -19,6 +22,29 @@
 }
 .status_header {
   margin: 0;
+  margin-bottom: 10px;
+}
+
+.skills {
+  text-align: right;
+  padding: 3px;
+  color: white;
+  border-radius: 30px;
+}
+
+.container {
+  background-color: #ddd;
+  border-radius: 30px;
+}
+
+.severity {
+  width: {{ result['threat_level']*20 }}%;
+  background-color: #D00000;
+}
+
+.confidence {
+  width: {{ (5-result['trust_factor'])*20 }}%;
+  background-color: #94B60A;
 }
 {{ super() }}
 {% endblock %}
@@ -42,7 +68,10 @@
       </h3>
       {% if result['threat_status'] %}
         {% if result['threat_status'] == 'known' %}
-        <p> Confidence : {{ 5-result['trust_factor'] }} <br>
+          <div class="container">
+            <div class="skills confidence"> Confidence : {{ 5-result['trust_factor'] }} </div>
+          </div>
+          <p>
           {% set tf = 5-result['trust_factor'] %}
           {% if tf == 0 or tf == 1 %}
           Whitelisted / Reputable Origin
@@ -50,9 +79,12 @@
           Likely Benign / Public Origin
           {% elif tf == 4 or tf == 5 %}
           Not a known threat / Unverified Origin
-          {% endif %} </p>
+          {% endif %}
+        </p>
         {% elif result['threat_status'] == 'malicious' or result['threat_status'] == 'suspicious'%}
-        <p> Severity : {{ result['threat_level'] }} </p>
+        <div class="container">
+          <div class="skills severity"> Severity : {{ result['threat_level'] }} </div>
+        </div>
         {% elif result['threat_status'] == 'unknown' %}
         <p> No Classification </p>
         {% endif %}
