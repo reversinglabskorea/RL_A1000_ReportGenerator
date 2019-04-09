@@ -1,0 +1,18 @@
+{% extends "detailpage_base.html" %}
+{% block style %} {{ super() }} {% endblock %}
+{% block contents %}
+
+<h1> TiCloud </h1>
+{% for entry in tc_xref %}
+<p> {{ "%d"|format(tc_malwarepresence['scanner_percent']) }}% - {{ tc_malwarepresence['scanner_match']}} of {{ tc_malwarepresence['scanner_count'] }} AV Detections on {{ entry['record_time'] }} </p>
+  <table>
+    {% for scanner in entry['scanners'] %}
+    <tr>
+      <td id="gray"> {{ scanner['name'] }} </td>
+      <td> {{ scanner['result'] }} </td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endfor %}
+
+{% endblock %}

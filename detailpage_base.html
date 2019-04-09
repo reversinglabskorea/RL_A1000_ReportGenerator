@@ -191,19 +191,31 @@
       <p id="menutab-title"> ReversingLabs A1000 Report </p>
       <ul>
         <li id="category-list"> <a href="{{ savefile_name }}.html"> <b> Summary </b> </a> </li>
+
+        {% if 'info' in ticore_menu %}
         <li id="category-list"> <b> Info </b> </li>
-        {% set info_var = ['file', 'hashes'] %}
+        {% set info_var = ticore_menu['info'] %}
         {% for iv in info_var %}
           <li id="categories"> <a href="{{ savefile_name }}+info_{{iv}}.html"> {{ iv|capitalize }} </a> </li>
         {% endfor %}
+        {% endif %}
+
+        {% if 'application' in ticore_menu %}
         <li id="category-list"> <b> Application (PE) </b> </li>
-          <li id="categories"> <a href="{{ savefile_name }}+capabilities.html"> Capabilities </a> </li>
-        {% set category_var = ['dos_header', 'file_header', 'optional_header', 'sections', 'imports', 'resources', 'version_info'] %}
+        {% set category_var = ticore_menu['application'] %}
         {% for cv in category_var %}
           <li id="categories"> <a href="{{ savefile_name }}+{{ cv }}.html"> {{ cv.replace("_", " ").title() }} </a> </li>
         {% endfor %}
+        {% endif %}
+
+        {% if 'indicators' in ticore_menu %}
         <li id="categories"> <a href="{{ savefile_name }}+indicator.html"> Indicators </a> </li>
+        {% endif %}
+
+        {% if 'ticloud' in ticore_menu %}
         <li id="category-list"> <a href="{{ savefile_name }}+TiCloud.html"> <b> Titanium Cloud </b> </a> </li>
+        {% endif %}
+
       </ul>
     </div>
   </section>

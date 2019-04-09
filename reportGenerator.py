@@ -26,6 +26,14 @@ def get_auth_file(fileaddr):
     except IOError as err:
         print("IOError:", err)
 
+def ticloud_generate_headers(user, password):
+    data = '%s:%s' % (user, password)
+    auth = base64.b64encode(data.encode('utf-8')).decode()
+    headers = {
+        'Authorization': 'Basic %s' % (auth,)
+    }
+    return headers
+
 def get_upload_file_list(fileaddr):
     try:
         upload_list = []
@@ -96,7 +104,7 @@ def is_empty(var):
     else:
         return True
 
-def make_menu(ticore):
+def make_menu(ticore, r0101, r0104):
     ticore_keys_all = list(ticore.keys())
     ticore_keys = []
     for key in ticore_keys_all:
@@ -123,12 +131,15 @@ def make_menu(ticore):
                 app_sub.append(ad)
         ticore_menu['application'] = app_sub
 
+    if 'indicators' in ticore_keys:
+        ticore_menu['indicators'] = []
+
+    if 'malware_presence' in r0101['rl'] and 'xref' in r0104['rl']['sample']:
+        ticore_menu['ticloud'] = []
+
     print('ticore_menu:', ticore_menu)
     return ticore_menu
     # need to add protection, certificate, strings, interesting_strings, classification, ..
-
-
-    return ticore_keys
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='ReversingLabs Korea - Report Generator Using A1000 api')
@@ -148,6 +159,8 @@ if __name__ == "__main__":
         authdata = get_auth_file(args['auth'])
         addr = authdata['addr']
         token = authdata['token']
+        ticloud_addr = authdata['ticloud_addr']
+
         file_list = get_upload_file_list(args['upload'])
         index = 1
 
@@ -169,11 +182,13 @@ if __name__ == "__main__":
 
             print(index, '/', len(file_list), '| Generating report -', file_name)
 
+            # get ticore data
             ticoredata = requests.get('%s/api/samples/%s/ticore/' % (addr, hash_code),
                             headers = {'Authorization': 'Token %s' % token})
 
             ticore = json.loads(ticoredata.text)
 
+            # get(post) "list" data
             post_data = {"hash_values": hash_code, "fields": ["id", "sha1", "sha256", "sha512", "md5", "category", "file_type", "file_subtype", "identification_name",\
                    "identification_version", "file_size", "extracted_file_count", "local_first_seen", "local_last_seen",\
                    "classification_origin", "classification_reason",\
@@ -184,7 +199,17 @@ if __name__ == "__main__":
                             data = post_data,
                             headers = {'Authorization': 'Token %s' % token})
 
-            if listdata.status_code != 200:
+            # get Ticloud data
+            hd = ticloud_generate_headers(authdata['ticloud_username'], authdata['ticloud_password'])
+            r0101 = requests.get(ticloud_addr+'/api/databrowser/malware_presence/query/'+hash_type+'/'+hash_code+'?format='+result_format+'&extended=true',
+                headers = hd )
+
+            r0104 = requests.get(ticloud_addr+'/api/databrowser/rldata/query/'+hash_type+'/'+hash_code+'?format='+result_format+'&extended=true',
+                headers = hd )
+             ### r0101/r0104 exception
+
+
+            if listdata.status_code != 200 :
                 print('status : ', listdata.status_code)
             else:
                 result = json.loads(listdata.text)
@@ -201,13 +226,18 @@ if __name__ == "__main__":
                     data[hash_code] = [f, result['threat_status'], savefile_name]
                     data_categorized_number[result['threat_status'].lower()]+=1
 
+                    # for ticloud page
+                    r0101_text = json.loads(r0101.text)
+                    tc_malwarepresence = r0101_text['rl']['malware_presence']
+                    r0104_text = json.loads(r0104.text)
+                    tc_xref = r0104_text['rl']['sample']['xref']['entries']
+
                     # data processing
                     filesize_formatted = format_bytes(result['file_size'])
                     result['file_size'] = filesize_formatted
 
                     # make menu dict
-                    menu_keys = make_menu(ticore)
-                    print("menukeys:", menu_keys)
+                    ticore_menu = make_menu(ticore, r0101_text, r0104_text)
 
                     # for file writing
                     file_loader = FileSystemLoader('./')
@@ -216,19 +246,19 @@ if __name__ == "__main__":
                     # write summary page
                     tmpl_detail = env.get_template('summarypage_template.html')
                     with open('result\\%s.html' % savefile_name , "w", encoding='utf-8') as fp :
-                        fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result))
+                        fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu))
                         print(os.getcwd()+"\\result\\%s.html SAVED" % savefile_name)
 
                     # write info-file page
                     tmpl_detail2 = env.get_template('info-file_template.html')
                     with open('result\\%s+info_file.html' % savefile_name, "w", encoding='utf-8') as fp :
-                        fp.write(tmpl_detail2.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result))
+                        fp.write(tmpl_detail2.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu))
                         print(os.getcwd()+"\\result\\%s+info_file.html SAVED" % savefile_name)
 
                     # write info-hashes page
                     tmpl_detail = env.get_template('info-hashes_template.html')
                     with open('result\\%s+info_hashes.html' % savefile_name, "w", encoding='utf-8') as fp :
-                        fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result))
+                        fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu))
                         print(os.getcwd()+"\\result\\%s+info_hashes.html SAVED" % savefile_name)
 
                     # write app-capabilities Page
@@ -236,7 +266,7 @@ if __name__ == "__main__":
                         capabilities = ticore['application']['capabilities']
                         tmpl_detail = env.get_template('app-capabilities.html')
                         with open('result\\%s+capabilities.html' % savefile_name, "w", encoding='utf-8') as fp :
-                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, capabilities = capabilities))
+                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, capabilities = capabilities))
                             print(os.getcwd()+"\\result\\%s+capabilities.html SAVED" % savefile_name)
 
                     except KeyError:
@@ -253,7 +283,7 @@ if __name__ == "__main__":
 
                         tmpl_detail3 = env.get_template('app-dos_header.html')
                         with open('result\\%s+dos_header.html' % savefile_name, "w", encoding='utf-8') as fp :
-                            fp.write(tmpl_detail3.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, dos_header_keys = dos_header_keys ))
+                            fp.write(tmpl_detail3.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, dos_header_keys = dos_header_keys ))
                             print(os.getcwd()+"\\result\\%s+dos_header.html SAVED" % savefile_name)
 
                     except KeyError:
@@ -270,7 +300,7 @@ if __name__ == "__main__":
 
                         tmpl_detail = env.get_template('app-file_header.html')
                         with open('result\\%s+file_header.html' % savefile_name, "w", encoding='utf-8') as fp :
-                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, file_header_keys = file_header_keys))
+                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, file_header_keys = file_header_keys))
                             print(os.getcwd()+"\\result\\%s+file_header.html SAVED" % savefile_name)
 
                     except KeyError:
@@ -282,7 +312,7 @@ if __name__ == "__main__":
 
                         tmpl_detail = env.get_template('app-version_info.html')
                         with open('result\\%s+version_info.html' % savefile_name, "w", encoding='utf-8') as fp :
-                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result))
+                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu))
                             print(os.getcwd()+"\\result\\%s+version_info.html SAVED" % savefile_name)
 
                     except KeyError:
@@ -294,7 +324,7 @@ if __name__ == "__main__":
 
                         tmpl_detail = env.get_template('app-imports.html')
                         with open('result\\%s+imports.html' % savefile_name, "w", encoding='utf-8') as fp :
-                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, imports = imports))
+                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, imports = imports))
                             print(os.getcwd()+"\\result\\%s+imports.html SAVED" % savefile_name)
 
                     except KeyError:
@@ -311,7 +341,7 @@ if __name__ == "__main__":
 
                         tmpl_detail = env.get_template('app-sections.html')
                         with open('result\\%s+sections.html' % savefile_name, "w", encoding='utf-8') as fp :
-                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, sections = sections))
+                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, sections = sections))
                             print(os.getcwd()+"\\result\\%s+sections.html SAVED" % savefile_name)
 
                     except KeyError:
@@ -330,7 +360,7 @@ if __name__ == "__main__":
 
                         tmpl_detail = env.get_template('app-resources.html')
                         with open('result\\%s+resources.html' % savefile_name, "w", encoding='utf-8') as fp :
-                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, resources = resources))
+                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, resources = resources))
                             print(os.getcwd()+"\\result\\%s+resources.html SAVED" % savefile_name)
 
                     except KeyError:
@@ -347,8 +377,14 @@ if __name__ == "__main__":
                         indicator_dict = get_indicator_dict()
                         tmpl_detail = env.get_template('ticore-indicator.html')
                         with open('result\\%s+indicator.html' % savefile_name, "w", encoding='utf-8') as fp :
-                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, indicators = indicators, indicator_dict = indicator_dict))
+                            fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, indicators = indicators, indicator_dict = indicator_dict))
                             print(os.getcwd()+"\\result\\%s+indicator.html SAVED" % savefile_name)
+
+                    # write ticloud page
+                    tmpl_detail = env.get_template('ticloud.html')
+                    with open('result\\%s+ticloud.html' % savefile_name, "w", encoding='utf-8') as fp :
+                        fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, tc_malwarepresence = tc_malwarepresence, tc_xref = tc_xref))
+                        print(os.getcwd()+"\\result\\%s+ticloud.html SAVED" % savefile_name)
 
                     index+=1
 
