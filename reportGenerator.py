@@ -136,8 +136,11 @@ def make_menu(ticore, r0101, r0104):
     if 'indicators' in ticore_keys:
         ticore_menu['indicators'] = []
 
-    if 'malware_presence' in r0101['rl'] and 'xref' in r0104['rl']['sample']:
-        ticore_menu['ticloud'] = []
+    try:
+        if 'malware_presence' in r0101['rl'] and 'xref' in r0104['rl']['sample']:
+            ticore_menu['ticloud'] = []
+    except KeyError as err:
+        print("KeyError: ticloud -", err)
 
     print('ticore_menu:', ticore_menu)
     return ticore_menu
@@ -212,13 +215,19 @@ if __name__ == "__main__":
 
             # get Ticloud data
             hd = ticloud_generate_headers(authdata['ticloud_username'], authdata['ticloud_password'])
-            r0101 = requests.get(ticloud_addr+'/api/databrowser/malware_presence/query/'+hash_type+'/'+hash_code+'?format='+result_format+'&extended=true',
-                headers = hd )
+            is_TiCloudData = False
 
-            r0104 = requests.get(ticloud_addr+'/api/databrowser/rldata/query/'+hash_type+'/'+hash_code+'?format='+result_format+'&extended=true',
-                headers = hd )
-             ### r0101/r0104 exception
+            try:
+                r0101 = requests.get(ticloud_addr+'/api/databrowser/malware_presence/query/'+hash_type+'/'+hash_code+'?format='+result_format+'&extended=true',
+                    headers = hd )
 
+                r0104 = requests.get(ticloud_addr+'/api/databrowser/rldata/query/'+hash_type+'/'+hash_code+'?format='+result_format+'&extended=true',
+                    headers = hd )
+                 ### r0101/r0104 exception
+            except:
+                print("Error with r0101/r0104")
+            else:
+                is_TiCloudData = True
 
             if listdata.status_code != 200 :
                 print('status : ', listdata.status_code)
@@ -240,8 +249,14 @@ if __name__ == "__main__":
                     # for ticloud page
                     r0101_text = json.loads(r0101.text)
                     tc_malwarepresence = r0101_text['rl']['malware_presence']
-                    r0104_text = json.loads(r0104.text)
-                    tc_xref = r0104_text['rl']['sample']['xref']['entries']
+                    try:
+                        r0104_text = json.loads(r0104.text)
+                        tc_xref = r0104_text['rl']['sample']['xref']['entries']
+                    except:
+                        print("getting r0104: Error")
+                        r0104_text = {}
+                        tc_xref = {}
+
 
                     # data processing
                     filesize_formatted = format_bytes(result['file_size'])
@@ -418,10 +433,16 @@ if __name__ == "__main__":
                             print(os.getcwd()+"\\result\\%s+indicator.html SAVED" % savefile_name)
 
                     # write ticloud page
-                    tmpl_detail = env.get_template('ticloud.html')
-                    with open('result\\%s+ticloud.html' % savefile_name, "w", encoding='utf-8') as fp :
-                        fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, tc_malwarepresence = tc_malwarepresence, tc_xref = tc_xref))
-                        print(os.getcwd()+"\\result\\%s+ticloud.html SAVED" % savefile_name)
+                    if is_TiCloudData:
+                        tmpl_tc = env.get_template('ticloud.html')
+                        with open('result\\%s+ticloud.html' % savefile_name, "w", encoding='utf-8') as fp :
+                            fp.write(tmpl_tc.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, tc_malwarepresence = tc_malwarepresence, tc_xref = tc_xref))
+                            print(os.getcwd()+"\\result\\%s+ticloud.html SAVED" % savefile_name)
+                    else:
+                        tmpl_tc = env.get_template('nodatapage.html')
+                        with open('result\\%s+ticloud.html' % savefile_name, "w", encoding='utf-8') as fp :
+                            fp.write(tmpl_tc.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu))
+                            print(os.getcwd()+"\\result\\%s+ticloud.html SAVED" % savefile_name)
 
                     index+=1
 
