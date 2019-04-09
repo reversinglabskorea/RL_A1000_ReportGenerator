@@ -174,13 +174,22 @@ if __name__ == "__main__":
                 hash_code = f[1:]
                 file_name = f[1:]
             else:
-                response = requests.post('%s/api/uploads/' % addr, files={'file': open(f, 'rb')},
-                            headers = {'Authorization': 'Token %s' % token})
+                try:
+                    response = requests.post('%s/api/uploads/' % addr, files={'file': open(f, 'rb')},
+                                headers = {'Authorization': 'Token %s' % token})
 
-                response_json = json.loads(response.text)
+                    response_json = json.loads(response.text)
 
-                hash_code = response_json["detail"]['sha1']
-                file_name = os.path.basename(f)
+                    hash_code = response_json["detail"]['sha1']
+                    file_name = os.path.basename(f)
+
+                except FileNotFoundError:
+                    print(f, "not found error")
+                    continue
+
+                except:
+                    print("Error")
+                    continue
 
             print(index, '/', len(file_list), '| Generating report -', file_name)
 
