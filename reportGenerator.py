@@ -247,8 +247,13 @@ if __name__ == "__main__":
                     data_categorized_number[result['threat_status'].lower()]+=1
 
                     # for ticloud page
-                    r0101_text = json.loads(r0101.text)
-                    tc_malwarepresence = r0101_text['rl']['malware_presence']
+                    try:
+                        r0101_text = json.loads(r0101.text)
+                        tc_malwarepresence = r0101_text['rl']['malware_presence']
+                    except:
+                        print("getting r0101: Error")
+                        r0101_text = {}
+                        tc_malwarepresence = {}
                     try:
                         r0104_text = json.loads(r0104.text)
                         tc_xref = r0104_text['rl']['sample']['xref']['entries']
