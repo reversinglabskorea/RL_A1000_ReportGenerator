@@ -160,7 +160,9 @@ if __name__ == "__main__":
 
     time_list = get_utc_local_time()
 
-    result_dir = os.path.join(os.getcwd(), "result")
+    if not os.path.isdir(os.path.join(os.getcwd(), 'result')):
+        os.mkdir(os.path.join(os.getcwd(), 'result'))
+    result_dir = os.path.join(os.getcwd(), 'result')
 
     if args['upload'] != None and args['auth'] != None:
         authdata = get_auth_file(args['auth'])
