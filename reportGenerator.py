@@ -160,6 +160,8 @@ if __name__ == "__main__":
 
     time_list = get_utc_local_time()
 
+    result_dir = os.path.join(os.getcwd(), "result")
+
     if args['upload'] != None and args['auth'] != None:
         authdata = get_auth_file(args['auth'])
         addr = authdata['addr']
@@ -296,35 +298,35 @@ if __name__ == "__main__":
 
                     # write summary page
                     tmpl_detail = env.get_template('summarypage_template.html')
-                    with open('result\\%s.html' % savefile_name , "w", encoding='utf-8') as fp :
+                    with open(os.path.join(result_dir, '%s.html' % savefile_name), "w", encoding='utf-8') as fp :
                         fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu))
-                        print(os.getcwd()+"\\result\\%s.html SAVED" % savefile_name)
+                        print(os.path.join(result_dir, '%s.html' % savefile_name), "SAVED")
 
                     # write info-file page
                     tmpl_detail2 = env.get_template('info-file_template.html')
-                    with open('result\\%s+info_file.html' % savefile_name, "w", encoding='utf-8') as fp :
+                    with open(os.path.join(result_dir, '%s+info_file.html' % savefile_name), "w", encoding='utf-8') as fp :
                         fp.write(tmpl_detail2.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu))
-                        print(os.getcwd()+"\\result\\%s+info_file.html SAVED" % savefile_name)
+                        print(os.path.join(result_dir, '%s+info_file.html' % savefile_name), "SAVED")
 
                     # write info-hashes page
                     tmpl_detail = env.get_template('info-hashes_template.html')
-                    with open('result\\%s+info_hashes.html' % savefile_name, "w", encoding='utf-8') as fp :
+                    with open(os.path.join(result_dir, '%s+info_hashes.html' % savefile_name), "w", encoding='utf-8') as fp :
                         fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu))
-                        print(os.getcwd()+"\\result\\%s+info_hashes.html SAVED" % savefile_name)
+                        print(os.path.join(result_dir, '%s+info_hashes.html' % savefile_name), "SAVED")
 
                     # write info-statistics page
                     tmpl_detail = env.get_template('info-statistics.html')
-                    with open('result\\%s+info_statistics.html' % savefile_name, "w", encoding='utf-8') as fp :
+                    with open(os.path.join(result_dir, '%s+info_statistics.html' % savefile_name), "w", encoding='utf-8') as fp :
                         fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, tc_info_stat = tc_info_stat))
-                        print(os.getcwd()+"\\result\\%s+info_statistics.html SAVED" % savefile_name)
+                        print(os.path.join(result_dir, '%s+info_statistics.html' % savefile_name), "SAVED")
 
                     # write app-capabilities Page
                     try:
                         capabilities = ticore['application']['capabilities']
                         tmpl_detail = env.get_template('app-capabilities.html')
-                        with open('result\\%s+capabilities.html' % savefile_name, "w", encoding='utf-8') as fp :
+                        with open(os.path.join(result_dir, '%s+capabilities.html' % savefile_name), "w", encoding='utf-8') as fp :
                             fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, capabilities = capabilities))
-                            print(os.getcwd()+"\\result\\%s+capabilities.html SAVED" % savefile_name)
+                            print(os.path.join(result_dir, '%s+capabilities.html' % savefile_name), "SAVED")
 
                     except KeyError:
                         print("Key Capabilities not found")
@@ -339,9 +341,9 @@ if __name__ == "__main__":
                                 dos_header_dict[k] = "0x{:08x}".format(dos_header_dict[k])
 
                         tmpl_detail3 = env.get_template('app-dos_header.html')
-                        with open('result\\%s+dos_header.html' % savefile_name, "w", encoding='utf-8') as fp :
+                        with open(os.path.join(result_dir, '%s+dos_header.html' % savefile_name), "w", encoding='utf-8') as fp :
                             fp.write(tmpl_detail3.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, dos_header_keys = dos_header_keys ))
-                            print(os.getcwd()+"\\result\\%s+dos_header.html SAVED" % savefile_name)
+                            print(os.path.join(result_dir, '%s+dos_header.html' % savefile_name), "SAVED")
 
                     except KeyError:
                         print("Key dos_header not found")
@@ -356,9 +358,9 @@ if __name__ == "__main__":
                                 file_header_dict[k] = "0x{:08x}".format(file_header_dict[k])
 
                         tmpl_detail = env.get_template('app-file_header.html')
-                        with open('result\\%s+file_header.html' % savefile_name, "w", encoding='utf-8') as fp :
+                        with open(os.path.join(result_dir, '%s+file_header.html' % savefile_name), "w", encoding='utf-8') as fp :
                             fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, file_header_keys = file_header_keys))
-                            print(os.getcwd()+"\\result\\%s+file_header.html SAVED" % savefile_name)
+                            print(os.path.join(result_dir, '%s+file_header.html' % savefile_name), "SAVED")
 
                     except KeyError:
                         print("Key file_header not found")
@@ -368,9 +370,9 @@ if __name__ == "__main__":
                         version_info = ticore['application']['pe']['version_info']
 
                         tmpl_detail = env.get_template('app-version_info.html')
-                        with open('result\\%s+version_info.html' % savefile_name, "w", encoding='utf-8') as fp :
+                        with open(os.path.join(result_dir, '%s+version_info.html' % savefile_name), "w", encoding='utf-8') as fp :
                             fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu))
-                            print(os.getcwd()+"\\result\\%s+version_info.html SAVED" % savefile_name)
+                            print(os.path.join(result_dir, '%s+version_info.html' % savefile_name), "SAVED")
 
                     except KeyError:
                         print("Key version_info not found")
@@ -380,9 +382,9 @@ if __name__ == "__main__":
                         imports = ticore['application']['pe']['imports']
 
                         tmpl_detail = env.get_template('app-imports.html')
-                        with open('result\\%s+imports.html' % savefile_name, "w", encoding='utf-8') as fp :
+                        with open(os.path.join(result_dir, '%s+imports.html' % savefile_name), "w", encoding='utf-8') as fp :
                             fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, imports = imports))
-                            print(os.getcwd()+"\\result\\%s+imports.html SAVED" % savefile_name)
+                            print(os.path.join(result_dir, '%s+imports.html' % savefile_name), "SAVED")
 
                     except KeyError:
                         print("Key imports not found")
@@ -397,9 +399,9 @@ if __name__ == "__main__":
                             section['offset'] = "0x{:08x}".format(section['offset'])
 
                         tmpl_detail = env.get_template('app-sections.html')
-                        with open('result\\%s+sections.html' % savefile_name, "w", encoding='utf-8') as fp :
+                        with open(os.path.join(result_dir, '%s+sections.html' % savefile_name), "w", encoding='utf-8') as fp :
                             fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, sections = sections))
-                            print(os.getcwd()+"\\result\\%s+sections.html SAVED" % savefile_name)
+                            print(os.path.join(result_dir, '%s+sections.html' % savefile_name), "SAVED")
 
                     except KeyError:
                         print("Key sections not found")
@@ -416,9 +418,9 @@ if __name__ == "__main__":
 
 
                         tmpl_detail = env.get_template('app-resources.html')
-                        with open('result\\%s+resources.html' % savefile_name, "w", encoding='utf-8') as fp :
+                        with open(os.path.join(result_dir, '%s+resources.html' % savefile_name), "w", encoding='utf-8') as fp :
                             fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, resources = resources))
-                            print(os.getcwd()+"\\result\\%s+resources.html SAVED" % savefile_name)
+                            print(os.path.join(result_dir, '%s+resources.html' % savefile_name), "SAVED")
 
                     except KeyError:
                         print("Key resources not found")
@@ -433,21 +435,21 @@ if __name__ == "__main__":
                                 indicators[i['category']] = [i['description']]
                         indicator_dict = get_indicator_dict()
                         tmpl_detail = env.get_template('ticore-indicator.html')
-                        with open('result\\%s+indicator.html' % savefile_name, "w", encoding='utf-8') as fp :
+                        with open(os.path.join(result_dir, '%s+indicator.html' % savefile_name), "w", encoding='utf-8') as fp :
                             fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, indicators = indicators, indicator_dict = indicator_dict))
-                            print(os.getcwd()+"\\result\\%s+indicator.html SAVED" % savefile_name)
+                            print(os.path.join(result_dir, '%s+indicator.html' % savefile_name), "SAVED")
 
                     # write ticloud page
                     if is_TiCloudData:
                         tmpl_tc = env.get_template('ticloud.html')
-                        with open('result\\%s+ticloud.html' % savefile_name, "w", encoding='utf-8') as fp :
+                        with open(os.path.join(result_dir, '%s+ticloud.html' % savefile_name), "w", encoding='utf-8') as fp :
                             fp.write(tmpl_tc.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu, tc_malwarepresence = tc_malwarepresence, tc_xref = tc_xref))
-                            print(os.getcwd()+"\\result\\%s+ticloud.html SAVED" % savefile_name)
+                            print(os.path.join(result_dir, '%s+ticloud.html' % savefile_name), "SAVED")
                     else:
                         tmpl_tc = env.get_template('nodatapage.html')
-                        with open('result\\%s+ticloud.html' % savefile_name, "w", encoding='utf-8') as fp :
+                        with open(os.path.join(result_dir, '%s+ticloud.html' % savefile_name), "w", encoding='utf-8') as fp :
                             fp.write(tmpl_tc.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu))
-                            print(os.getcwd()+"\\result\\%s+ticloud.html SAVED" % savefile_name)
+                            print(os.path.join(result_dir, '%s+ticloud.html' % savefile_name), "SAVED")
 
                     index+=1
 
@@ -455,9 +457,9 @@ if __name__ == "__main__":
 
     stf = open("mainpage_template.html", "r", encoding='utf-8')
     summarytmpl = Template(stf.read())
-    with open('result\\summarypage.html', "w", encoding='utf-8') as fp :
+    with open(os.path.join(result_dir, 'summarypage.html'), "w", encoding='utf-8') as fp :
         fp.write(summarytmpl.render(data = data, time_list = time_list, data_categorized_number = data_categorized_number))
-        print(os.getcwd()+"\\"+"result\\"+"summarypage.html"+" SAVED")
+        print(os.path.join(result_dir, 'summarypage.html'), "SAVED")
 
     print("Complete to generate", index-1, "files")
 
