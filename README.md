@@ -18,6 +18,9 @@ py reportGenerator.py --auth authfile -u/--upload samplefilelist
 ```
 addr ****
 token ****
+ticloud_addr ^^^^
+ticloud_username !%!@%
+ticloud_password %$#@%
 ```
 
   **samplefilelist example**
