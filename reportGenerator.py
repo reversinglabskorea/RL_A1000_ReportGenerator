@@ -129,8 +129,11 @@ def make_menu(ticore, r0101, r0104):
         if 'capabilities' in ticore['application']:
             app_sub.append('capabilities')
         for ad in app_data:
-            if ad in ticore['application']['pe']:
-                app_sub.append(ad)
+            try:
+                if ad in ticore['application']['pe']:
+                    app_sub.append(ad)
+            except KeyError:
+                print("Key PE not Found")
         ticore_menu['application'] = app_sub
 
     if 'indicators' in ticore_keys:
@@ -186,7 +189,7 @@ if __name__ == "__main__":
                                 headers = {'Authorization': 'Token %s' % token})
 
                     response_json = json.loads(response.text)
-
+                    print("upload status:", response.status_code)
                     hash_code = response_json["detail"]['sha1']
                     file_name = os.path.basename(f)
 
