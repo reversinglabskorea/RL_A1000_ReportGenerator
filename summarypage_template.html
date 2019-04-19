@@ -92,8 +92,7 @@
     </div>
     <div class="summary-right-date">
       <p>
-
-        {% if result['ticloud'] %}
+        {% if result['ticloud']['first_seen'] is none %} {# why 'n'one? see https://github.com/pallets/jinja/issues/520 #}
          Cloud First Seen: {{ result['ticloud']['first_seen'] }}
          {% else %} Local First Seen: {{ result['local_first_seen'] }} {% endif %} <br>
         Local Last Seen: {{ result['local_last_seen'] }}

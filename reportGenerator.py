@@ -296,7 +296,7 @@ if __name__ == "__main__":
                     for fs in ticore['info']['statistics']['file_stats']:
                         file_count += fs['count']
                         counts.append(fs['count'])
-                        if fs['subtype'] is 'None' :
+                        if fs['subtype'] == 'None' :
                             tc_filetype = fs['type']
                         else:
                             tc_filetype = fs['type']+'/'+fs['subtype']
