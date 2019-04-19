@@ -11,6 +11,7 @@ import json
 import argparse
 import urllib.request
 import hashlib
+import time
 
 from datetime import datetime
 
@@ -133,7 +134,7 @@ def make_menu(ticore, r0101, r0104):
                 if ad in ticore['application']['pe']:
                     app_sub.append(ad)
             except KeyError:
-                print("Key PE not Found")
+                continue
         ticore_menu['application'] = app_sub
 
     if 'indicators' in ticore_keys:
@@ -145,7 +146,6 @@ def make_menu(ticore, r0101, r0104):
     except KeyError as err:
         print("KeyError: ticloud -", err)
 
-    print('ticore_menu:', ticore_menu)
     return ticore_menu
     # need to add protection, certificate, strings, interesting_strings, classification, ..
 
@@ -198,10 +198,24 @@ if __name__ == "__main__":
                     continue
 
                 except:
-                    print("Error")
+                    print("Upload Error")
                     continue
 
             print(index, '/', len(file_list), '| Generating report -', file_name)
+
+            # check update status
+            while True:
+                api_status = requests.post('%s/api/samples/status/' % addr,
+                            data = {"hash_values": [hash_code]},
+                            params = {"status": "not_found", "status": "processed"},
+                            headers = {'Authorization': 'Token %s' % token})
+                api_status_json = json.loads(api_status.text)
+                try:
+                    if api_status_json['results'][0]['status'] == 'processed':
+                        break
+                except IndexError:
+                    pass
+                time.sleep(3)
 
             # get ticore data
             ticoredata = requests.get('%s/api/samples/%s/ticore/' % (addr, hash_code),
