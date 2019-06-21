@@ -1,0 +1,15 @@
+{% extends "detailpage_base.html" %}
+{% block style %} {{ super() }} {% endblock %}
+{% block contents %}
+
+<h1> Rich Header </h1>
+<table>
+  {% for fh_key in file_header_keys %}
+  <tr>
+    <td id="gray"> {{ fh_key.replace("_", " ").title() }} </td>
+    <td> {{ ticore['application']['pe']['file_header'][fh_key] }} </td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
