@@ -149,6 +149,12 @@ def make_menu(ticore, r0101, r0104):
     return ticore_menu
     # need to add protection, certificate, strings, interesting_strings, classification, ..
 
+def make_html_file(template_var, result_dir, savefile_name, result_category):
+    # have to define result_category => summary(home page) , make clear between summarypage and homepage
+    with open(os.path.join(result_dir, '%s+%s.html' % (savefile_name, result_category)), "w", encoding="utf-8") as fp:
+        fp.write(template_var)
+        print(os.path.join(result_dir, '%s+%s.html' % (savefile_name, result_category)), "SAVED")
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='ReversingLabs Korea - Report Generator Using A1000 api')
     parser.add_argument('--auth', metavar='AUTH', required=True, help='auth data file')
