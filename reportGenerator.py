@@ -269,10 +269,17 @@ if __name__ == "__main__":
                     # for detail page
                     savefile_name = str(index)+'_'+file_name
 
+                    # separate file directory
+                    if not os.path.isdir(os.path.join(os.getcwd(), 'result', savefile_name)):
+                        os.mkdir(os.path.join(os.getcwd(), 'result', savefile_name))
+                    result_dir = os.path.join(os.getcwd(), 'result', savefile_name)
+
                     # for summary page
-                    data[hash_code] = [f, result['threat_status'], savefile_name]
+                    print('path:', savefile_name+os.sep)
+                    data[hash_code] = [f, result['threat_status'], savefile_name+os.sep+'summary']
                     data_categorized_number[result['threat_status'].lower()]+=1
 
+                    print('data[',hash_code,'] -', data[hash_code])
                     # for ticloud page
                     try:
                         r0101_text = json.loads(r0101.text)
@@ -288,7 +295,6 @@ if __name__ == "__main__":
                         print("getting r0104: Error")
                         r0104_text = {}
                         tc_xref = {}
-
 
                     # data processing
                     filesize_formatted = format_bytes(result['file_size'])
@@ -323,9 +329,9 @@ if __name__ == "__main__":
 
                     # write summary page
                     tmpl_detail = env.get_template('summarypage_template.html')
-                    with open(os.path.join(result_dir, '%s.html' % savefile_name), "w", encoding='utf-8') as fp :
+                    with open(os.path.join(result_dir, 'summary.html'), "w", encoding='utf-8') as fp :
                         fp.write(tmpl_detail.render(ticore = ticore, time_list = time_list, savefile_name = savefile_name, result = result, ticore_menu = ticore_menu))
-                        print(os.path.join(result_dir, '%s.html' % savefile_name), "SAVED")
+                        print(os.path.join(result_dir, 'summary.html'), "SAVED")
 
                     # write info-file page
                     tmpl_detail2 = env.get_template('info-file_template.html')
@@ -479,6 +485,8 @@ if __name__ == "__main__":
                     index+=1
 
     print("Generating Summary Report Page ...")
+
+    result_dir = os.path.join(os.getcwd(), 'result')
 
     stf = open("mainpage_template.html", "r", encoding='utf-8')
     summarytmpl = Template(stf.read())
